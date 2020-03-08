@@ -18,6 +18,34 @@ def find_smallest_positive(xs):
     True
     '''
 
+    left = 0
+    right = len(xs)-1
+
+    def go(left, right):
+        mid = (left+right)//2
+
+        if 0 == xs[mid]:
+            return mid + 1
+        if left == right:
+            if xs[mid] > 0:
+                return mid
+            else:
+                return None
+        if 0 < xs[mid]:
+            return go(left, mid-1)
+        if 0 > xs[mid]:
+            return go(mid+1,right)
+
+
+    if len(xs) == 0:
+        return None
+    if xs[0] > 0:
+        return 0
+    else:
+        return go(left, right)
+
+
+
 
 def count_repeats(xs, x):
     '''
@@ -39,6 +67,49 @@ def count_repeats(xs, x):
     >>> count_repeats([3, 2, 1], 4)
     0
     '''
+    left = 0
+    right = len(xs) - 1
+
+    def one(left,right):
+        mid = (left+right)//2
+
+        if xs[mid] == x:
+            if mid == 0 or xs[mid-1] > x:
+                return mid
+            else:
+                return one(left, mid - 1)
+        if left == right:
+            return None
+        if x < xs[mid]:
+            return one(mid + 1,right)
+        if x > xs[mid]:
+            return one(left, mid - 1)
+
+    def two(left,right):
+        mid = (left+right)//2
+
+        if x == xs[mid]:
+            if mid == len(xs)-1 or x > xs[mid+1]:
+                return mid
+            else:
+                return two(mid + 1, right)
+        if left == right:
+            return None
+        if x < xs[mid]:
+            return two(mid + 1,right)
+        if x > xs[mid]:
+            return two(left, mid - 1)
+
+    if len(xs) == 0:
+        return 0
+
+    first = one(left, right)
+    last = two(left, right)
+
+    if first == None or last == None:
+        return 0
+    else:
+        return last-first+1
 
 
 def argmin(f, lo, hi, epsilon=1e-3):
@@ -62,3 +133,18 @@ def argmin(f, lo, hi, epsilon=1e-3):
     -0.00016935087808430278
     '''
 
+    left = lo
+    right = hi
+
+    def go(left,right):
+        m1 = left + (right-left)/8
+        m2 = left + (right-left)/4
+
+        if right-left < epsilon:
+            return right
+        if f(m1) > f(m2):
+            return go(m1, right)
+        if f(m1) < f(m2):
+            return go(left, m2)
+
+    return go(left, right)
